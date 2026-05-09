@@ -1,0 +1,19 @@
+name = "turtlelet-api"
+main = "worker/index.ts"
+compatibility_date = "2024-06-01"
+
+# ─── D1 数据库 ───────────────────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "turtlelet-db"
+database_id = "394fe7e3-0306-480c-9642-5a277d0817cf"  # Your D1 database ID
+
+# ─── R2 存储桶 ────────────────────────────────────────────
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "turtlelet-files"
+
+# ─── 环境变量（在 Cloudflare Dashboard 的 Workers & Pages > 你的Worker > Settings > Variables 里设置） ───
+# JWT_SECRET        = "asdj&#4dahophop284IS*Hiop@#Hawjjkd84s"
+# ADMIN_PASSWORD    = "@2025zju4010DDY"
+# ALLOWED_ORIGIN    = "https://deng-deyu-github-io.pages.dev"  (或你的自定义域名)
