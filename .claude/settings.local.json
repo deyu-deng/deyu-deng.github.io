@@ -4,7 +4,11 @@
       "Bash(npm run *)",
       "Bash(npx tsc *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)"
     ]
   }
 }
