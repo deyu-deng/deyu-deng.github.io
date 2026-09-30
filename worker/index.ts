@@ -3,8 +3,10 @@ export interface Env {
   JWT_SECRET: string; ADMIN_PASSWORD: string; ALLOWED_ORIGIN: string
   RESEND_API_KEY: string; ADMIN_EMAIL: string; NOTIFY_FROM: string
 }
+const JWT_TTL_MS = 12 * 60 * 60 * 1000
 async function signJwt(p: Record<string,unknown>, s: string) {
-  const h=btoa(JSON.stringify({alg:'HS256',typ:'JWT'})), b=btoa(JSON.stringify({...p,iat:Date.now()}))
+  const iat=Date.now()
+  const h=btoa(JSON.stringify({alg:'HS256',typ:'JWT'})), b=btoa(JSON.stringify({...p,iat,exp:iat+JWT_TTL_MS}))
   const data=`${h}.${b}`, key=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['sign'])
   const sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(data))
   return `${data}.${btoa(String.fromCharCode(...new Uint8Array(sig)))}`
@@ -14,7 +16,10 @@ async function verifyJwt(token: string, s: string): Promise<boolean> {
     const [h,b,sig]=token.split('.')
     if(!h||!b||!sig) return false
     const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(s),{name:'HMAC',hash:'SHA-256'},false,['verify'])
-    return await crypto.subtle.verify('HMAC',key,Uint8Array.from(atob(sig),c=>c.charCodeAt(0)),new TextEncoder().encode(`${h}.${b}`))
+    const valid=await crypto.subtle.verify('HMAC',key,Uint8Array.from(atob(sig),c=>c.charCodeAt(0)),new TextEncoder().encode(`${h}.${b}`))
+    if(!valid) return false
+    const {exp}=JSON.parse(atob(b)) as {exp?:number}
+    return typeof exp==='number' && exp>Date.now()
   } catch { return false }
 }
 function corsH(origin: string): Record<string,string> {
@@ -44,6 +49,7 @@ async function isApprovedGuest(req: Request, env: Env): Promise<boolean> {
 }
 const uid=()=>crypto.randomUUID()
 const now=()=>new Date().toISOString()
+const esc=(v:unknown)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c] as string))
 const HAS_TS=['notes','songs','scores','models','honors','projects','note_files','guest_requests']
 const COLS: Record<string,string[]>={
   timeline:['year','title_en','title_zh','desc_en','desc_zh','sort_order'],
@@ -158,8 +164,8 @@ export default {
         const id=uid()
         await env.DB.prepare('INSERT INTO guest_requests (id,nickname,email,contact,reason,status,created_at) VALUES (?,?,?,?,?,?,?)')
           .bind(id,body.nickname,body.email,body.contact||'',body.reason||'','pending',now()).run()
-        await sendEmail(env,`[Turtlelet] 新访客申请 - ${body.nickname}`,
-          `<h2>访客申请下载权限</h2><p><b>昵称：</b>${body.nickname}</p><p><b>邮箱：</b>${body.email}</p><p><b>联系方式：</b>${body.contact||'未填'}</p><p><b>理由：</b>${body.reason||'未填'}</p><p>审批地址：${env.ALLOWED_ORIGIN}/guests</p><hr><small>ID: ${id}</small>`)
+        await sendEmail(env,`[Turtlelet] 新访客申请 - ${esc(body.nickname)}`,
+          `<h2>访客申请下载权限</h2><p><b>昵称：</b>${esc(body.nickname)}</p><p><b>邮箱：</b>${esc(body.email)}</p><p><b>联系方式：</b>${esc(body.contact)||'未填'}</p><p><b>理由：</b>${esc(body.reason)||'未填'}</p><p>审批地址：${esc(env.ALLOWED_ORIGIN)}/guests</p><hr><small>ID: ${id}</small>`)
         return ok({id},201,origin)
       }
       if(path==='/api/guest/check'&&method==='GET') {
