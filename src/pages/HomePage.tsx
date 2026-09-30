@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BookOpen, Music, Box, Award, Code2, ArrowRight, Clock, FileText, Plus, Pencil, Trash2, X, Loader, Mail, MessageCircle, Github, Monitor, Video } from 'lucide-react'
+import { BookOpen, Music, Box, Award, Code2, ArrowRight, Clock, FileText, Plus, Pencil, Trash2, X, Loader, Mail, MessageCircle, Github, Monitor } from 'lucide-react'
 import { useAppStore } from '@/store'
 import { summaryApi, timelineApi, fmtDate } from '@/lib/api'
+import { SHOWCASE_REPOS } from '@/data/projects'
 import type { Summary, TimelineItem } from '@/types'
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
@@ -79,7 +80,7 @@ function ModuleCards({ summary }: { summary: Summary | null }) {
   const countMap: Record<string,number> = {
     '/notes':    summary?.notes.count??0,
     '/music':    (summary?.songs.count??0)+(summary?.scores.count??0),
-    '/projects': summary?.projects.count??0,
+    '/projects': SHOWCASE_REPOS.length,
     '/modeling': summary?.models.count??0,
     '/honors':   summary?.honors.count??0,
   }
@@ -231,9 +232,8 @@ function ContactSection() {
   const LINKS=[
     {Icon:Mail,en:'Email',zh:'邮箱',sub:'3288979284@qq.com',href:'mailto:3288979284@qq.com'},
     {Icon:MessageCircle,en:'WeChat',zh:'微信',sub:'ddy19858131702',href:'#',note:lang==='zh'?'复制微信号':'Copy WeChat ID'},
-    {Icon:Github,en:'GitHub',zh:'GitHub',sub:'github.com/Deng-Deyu',href:'https://github.com/Deng-Deyu'},
-    {Icon:Monitor,en:'Bilibili',zh:'哔哩哔哩',sub:'@小龟不吹0v0',href:'https://space.bilibili.com/'},
-    {Icon:Video,en:'Douyin',zh:'抖音',sub:'ID: 27068227398',href:'https://www.douyin.com/user/MS4wLjABAAAA27068227398'},
+    {Icon:Github,en:'GitHub',zh:'GitHub',sub:'github.com/deyu-deng',href:'https://github.com/deyu-deng'},
+    {Icon:Monitor,en:'Bilibili',zh:'哔哩哔哩',sub:'@Plobi',href:'https://space.bilibili.com/3546916000368725'},
   ]
   return(
     <section id="contact" style={{padding:'5rem 2rem',background:'var(--bg2)'}}>

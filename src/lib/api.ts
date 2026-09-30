@@ -64,6 +64,71 @@ export const guestApi = {
     req<void>(`/api/guests/${id}/reject`, { method: 'PATCH' }, token),
 }
 
+// ── GitHub ────────────────────────────────────────────────────────────────────
+// 未登录的 GitHub API 每个 IP 只有 60 次/小时，所以原始结果缓存进 localStorage，TTL 一小时。
+export interface GhRepo {
+  name: string
+  description: string | null
+  html_url: string
+  homepage: string | null
+  language: string | null
+  stargazers_count: number
+  pushed_at: string
+  fork: boolean
+  archived: boolean
+}
+
+export interface GhRepoResult {
+  ok: boolean
+  repos: GhRepo[]
+  stale: boolean
+  error?: string
+}
+
+const GH_CACHE_KEY = 'turtlelet-gh-repos-v1'
+const GH_TTL = 60 * 60 * 1000
+
+type GhCache = { at: number; repos: GhRepo[] }
+
+function ghReadCache(): GhCache | null {
+  try {
+    const raw = localStorage.getItem(GH_CACHE_KEY)
+    if (!raw) return null
+    const c = JSON.parse(raw) as GhCache
+    return Array.isArray(c?.repos) ? c : null
+  } catch { return null }
+}
+
+export const githubApi = {
+  repos: async (user: string): Promise<GhRepoResult> => {
+    const cached = ghReadCache()
+    if (cached && Date.now() - cached.at < GH_TTL) return { ok: true, repos: cached.repos, stale: false }
+    // 不能走 req()：它在有 token 时会附 Authorization: Bearer <admin JWT>，那枚 token 绝不能发给 api.github.com
+    try {
+      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&sort=updated`)
+      if (!res.ok) throw new Error(`GitHub API ${res.status}`)
+      const raw = await res.json() as GhRepo[]
+      const repos: GhRepo[] = raw.map(r => ({
+        name: r.name,
+        description: r.description ?? null,
+        html_url: r.html_url,
+        homepage: r.homepage ?? null,
+        language: r.language ?? null,
+        stargazers_count: r.stargazers_count ?? 0,
+        pushed_at: r.pushed_at,
+        fork: !!r.fork,
+        archived: !!r.archived,
+      }))
+      try { localStorage.setItem(GH_CACHE_KEY, JSON.stringify({ at: Date.now(), repos })) } catch { /* 配额不足时放弃缓存 */ }
+      return { ok: true, repos, stale: false }
+    } catch (e) {
+      // 网络失败/被限流时退回旧缓存，而不是把页面清空
+      if (cached) return { ok: true, repos: cached.repos, stale: true, error: String(e) }
+      return { ok: false, repos: [], stale: false, error: String(e) }
+    }
+  },
+}
+
 export const fileApi = {
   upload: async (token: string, file: File): Promise<string | null> => {
     const meta = await req<{ file_key: string }>(
@@ -120,7 +185,7 @@ export function buildCategoryTree(cats: NoteCategory[]): NoteCategory[] {
       }
     }
   })
-  const sort = (arr: NoteCategory[]) =>
+  const sort = (arr: NoteCategory[]): NoteCategory[] =>
     arr.sort((a, b) => a.sort_order - b.sort_order).map(n => ({ ...n, children: sort(n.children ?? []) }))
   return sort(roots)
 }
