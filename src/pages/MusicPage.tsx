@@ -88,48 +88,47 @@ function ScoreEditor({ item, onSave, onClose }: { item?: Score; onSave:(d:Record
 }
 
 // ── Audio player bar ──────────────────────────────────────────────────────────
-function PlayerBar({ song, onClose, onPrev, onNext }: { song:Song|null; onClose:()=>void; onPrev:()=>void; onNext:()=>void }) {
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const [playing, setPlaying] = useState(false)
-  const [progress, setProgress] = useState(0)
+function PlayerBar({ song, playing, progress, duration, onToggle, onSeek, onPrev, onNext, onClose }: {
+  song: Song|null; playing: boolean; progress: number; duration: number
+  onToggle: () => void; onSeek: (t: number) => void
+  onPrev: () => void; onNext: () => void; onClose: () => void
+}) {
   const { lang } = useAppStore()
+  const seekable = Number.isFinite(duration) && duration > 0
+  const pct = seekable ? Math.min(100, progress / duration * 100) : 0
 
-  useEffect(() => {
-    if (!song?.audio_key || !audioRef.current) return
-    audioRef.current.src = fileApi.url(song.audio_key)
-    audioRef.current.play().then(()=>setPlaying(true)).catch(()=>{})
-  }, [song])
-
-  function togglePlay() {
-    if (!audioRef.current) return
-    if (playing) { audioRef.current.pause(); setPlaying(false) }
-    else { audioRef.current.play(); setPlaying(true) }
+  function seek(e: React.PointerEvent<HTMLDivElement>) {
+    if (!seekable) return
+    const r = e.currentTarget.getBoundingClientRect()
+    onSeek(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * duration)
   }
 
   return (
-    <>
-      <audio ref={audioRef} onEnded={onNext} onTimeUpdate={e=>setProgress((e.currentTarget.currentTime/e.currentTarget.duration)||0)} />
-      <div className={`player-bar ${song?'active':''}`}>
-        {song?.cover_key && <img src={fileApi.url(song.cover_key)} style={{ width:40,height:40,borderRadius:'var(--radius-sm)',objectFit:'cover',flexShrink:0 }} alt="" />}
-        {!song?.cover_key && <div style={{ width:40,height:40,borderRadius:'var(--radius-sm)',background:'var(--bg3)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}><Music2 size={18} style={{ color:'var(--accent)' }}/></div>}
-        <div style={{ flex:1,minWidth:0 }}>
+    <div className={`player-bar ${song?'active':''}`}>
+      {song?.cover_key && <img src={fileApi.url(song.cover_key)} style={{ width:40,height:40,borderRadius:'var(--r-sm)',objectFit:'cover',flexShrink:0 }} alt="" />}
+      {!song?.cover_key && <div style={{ width:40,height:40,borderRadius:'var(--r-sm)',background:'var(--bg3)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}><Music2 size={18} style={{ color:'var(--accent)' }}/></div>}
+      <div style={{ flex:1,minWidth:0 }}>
+        <div style={{ display:'flex',justifyContent:'space-between',alignItems:'baseline',gap:'.6rem' }}>
           <div style={{ fontWeight:700,fontSize:'.88rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{song?tl(song,lang):''}</div>
-          <div style={{ fontSize:'.75rem',color:'var(--text3)' }}>{song?.artist}</div>
-          <div style={{ height:3,background:'var(--bg4)',borderRadius:2,marginTop:.4,overflow:'hidden' }}>
-            <div style={{ height:'100%',background:'var(--grad)',width:`${progress*100}%`,transition:'width .5s linear' }} />
+          <div style={{ fontSize:'.7rem',color:'var(--text3)',fontFamily:"'Space Mono',monospace",flexShrink:0 }}>
+            {fmtDuration(progress)} / {seekable?fmtDuration(duration):'--:--'}
           </div>
         </div>
-        <div style={{ display:'flex',gap:'.4rem',alignItems:'center',flexShrink:0 }}>
-          <button className="btn-icon" onClick={onPrev}><SkipBack size={15}/></button>
-          <button onClick={togglePlay} style={{ width:36,height:36,borderRadius:'50%',background:'var(--grad)',border:'none',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center' }}>
-            {playing?<Pause size={16}/>:<Play size={16}/>}
-          </button>
-          <button className="btn-icon" onClick={onNext}><SkipForward size={15}/></button>
-          {song?.audio_key && <a href={fileApi.url(song.audio_key)} download className="btn-icon"><Download size={14}/></a>}
-          <button className="btn-icon" onClick={onClose}><X size={14}/></button>
+        <div onPointerDown={seek} style={{ height:4,background:'var(--bg4)',borderRadius:2,marginTop:'.35rem',overflow:'hidden',cursor:seekable?'pointer':'default',touchAction:'none' }}>
+          <div style={{ height:'100%',background:'var(--accent)',width:`${pct}%` }} />
         </div>
+        <div style={{ fontSize:'.72rem',color:'var(--text3)' }}>{song?.artist}</div>
       </div>
-    </>
+      <div style={{ display:'flex',gap:'.4rem',alignItems:'center',flexShrink:0 }}>
+        <button className="btn-icon" onClick={onPrev}><SkipBack size={15}/></button>
+        <button onClick={onToggle} aria-label={playing?(lang==='zh'?'暂停':'Pause'):(lang==='zh'?'播放':'Play')} style={{ width:36,height:36,borderRadius:'50%',background:'var(--accent)',border:'none',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center' }}>
+          {playing?<Pause size={16}/>:<Play size={16}/>}
+        </button>
+        <button className="btn-icon" onClick={onNext}><SkipForward size={15}/></button>
+        {song?.audio_key && <a href={fileApi.url(song.audio_key)} download className="btn-icon"><Download size={14}/></a>}
+        <button className="btn-icon" onClick={onClose}><X size={14}/></button>
+      </div>
+    </div>
   )
 }
 
@@ -150,6 +149,34 @@ function SongsTab({ view }: { view: ViewMode }) {
 
   const allSongs = songs
   const idx = currentSong ? allSongs.findIndex(s=>s.id===currentSong.id) : -1
+
+  // 播放状态一律由 audio 元素自己的事件驱动，不在别处 setPlaying，
+  // 否则列表按钮和底栏按钮会各自记一份真相并失同步。
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [playing, setPlaying] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  useEffect(() => {
+    const el = audioRef.current
+    if (!el) return
+    if (!currentSong?.audio_key) { el.pause(); return }
+    el.src = fileApi.url(currentSong.audio_key)
+    el.play().catch(()=>{})
+  }, [currentSong])
+
+  function playPause() {
+    const el = audioRef.current
+    if (!el) return
+    if (el.paused) el.play().catch(()=>{})
+    else el.pause()
+  }
+  function tapSong(song: Song) {
+    if (currentSong?.id === song.id) { playPause(); return }
+    setCurrentSong(song)
+  }
+  const goPrev = () => { if (idx>0) setCurrentSong(allSongs[idx-1]) }
+  const goNext = () => { if (idx<allSongs.length-1) setCurrentSong(allSongs[idx+1]) }
 
   async function save(data: Record<string,unknown>) {
     if (editing==='new') await songsApi.create(token!,data); else if (editing) await songsApi.update(token!,editing.id,data); await load()
@@ -174,7 +201,7 @@ function SongsTab({ view }: { view: ViewMode }) {
                 {view==='card' ? (
                   <div className="cards-grid-2" style={{ paddingBottom:'.5rem' }}>
                     {artistSongs.map(song=>(
-                      <div key={song.id} style={{ display:'flex',alignItems:'center',gap:'1rem',background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',padding:'1rem',backdropFilter:'blur(12px)',cursor:'pointer',transition:'border-color var(--trans)',}} onClick={()=>setCurrentSong(song)} onMouseEnter={e=>(e.currentTarget as HTMLDivElement).style.borderColor='var(--border-h)'} onMouseLeave={e=>(e.currentTarget as HTMLDivElement).style.borderColor='var(--card-border)'}>
+                      <div key={song.id} style={{ display:'flex',alignItems:'center',gap:'1rem',background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',padding:'1rem',cursor:'pointer',transition:'border-color var(--trans)',}} onClick={()=>tapSong(song)} onMouseEnter={e=>(e.currentTarget as HTMLDivElement).style.borderColor='var(--border-h)'} onMouseLeave={e=>(e.currentTarget as HTMLDivElement).style.borderColor='var(--card-border)'}>
                         {song.cover_key?<img src={fileApi.url(song.cover_key)} style={{ width:48,height:48,borderRadius:'var(--radius-sm)',objectFit:'cover',flexShrink:0 }} alt=""/>:<div style={{ width:48,height:48,borderRadius:'var(--radius-sm)',background:'var(--bg3)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}><Music2 size={20} style={{ color:'var(--accent)' }}/></div>}
                         <div style={{ flex:1,minWidth:0 }}>
                           <div style={{ fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{tl(song,lang)}</div>
@@ -183,8 +210,8 @@ function SongsTab({ view }: { view: ViewMode }) {
                         </div>
                         <div style={{ display:'flex',gap:'.3rem',flexShrink:0 }} onClick={e=>e.stopPropagation()}>
                           {isAdmin&&<><button className="btn-icon" style={{ width:28,height:28 }} onClick={()=>setEditing(song)}><Pencil size={12}/></button><button className="btn-icon" style={{ width:28,height:28 }} onClick={()=>del(song.id)}><Trash2 size={12}/></button></>}
-                          <button style={{ width:32,height:32,borderRadius:'50%',background: currentSong?.id===song.id?'var(--grad)':'var(--bg3)',border:'1px solid var(--border)',color:currentSong?.id===song.id?'#fff':'var(--text2)',display:'flex',alignItems:'center',justifyContent:'center' }} onClick={()=>setCurrentSong(song)}>
-                            {currentSong?.id===song.id?<Pause size={13}/>:<Play size={13}/>}
+                          <button aria-label={lang==='zh'?'播放或暂停':'Play or pause'} style={{ width:32,height:32,borderRadius:'50%',background: currentSong?.id===song.id?'var(--accent)':'var(--bg3)',border:'1px solid var(--border)',color:currentSong?.id===song.id?'#fff':'var(--text2)',display:'flex',alignItems:'center',justifyContent:'center' }} onClick={()=>tapSong(song)}>
+                            {currentSong?.id===song.id&&playing?<Pause size={13}/>:<Play size={13}/>}
                           </button>
                           {song.audio_key&&(isAdmin||guestToken)&&<a href={fileApi.url(song.audio_key)} download className="btn-icon" style={{ width:28,height:28 }} onClick={e=>e.stopPropagation()}><Download size={12}/></a>}
                           {song.audio_key&&!isAdmin&&!guestToken&&<span style={{fontSize:'.65rem',color:'var(--text3)',fontFamily:"'Space Mono',monospace",whiteSpace:'nowrap'}}>{lang==='zh'?'申请后可下载':'Login to download'}</span>}
@@ -195,8 +222,8 @@ function SongsTab({ view }: { view: ViewMode }) {
                 ) : (
                   <div className="list-view" style={{ paddingBottom:'.5rem' }}>
                     {artistSongs.map(song=>(
-                      <div key={song.id} className="list-item" style={{ cursor:'pointer' }} onClick={()=>setCurrentSong(song)}>
-                        <Play size={14} style={{ color:'var(--accent)',flexShrink:0 }}/>
+                      <div key={song.id} className="list-item" style={{ cursor:'pointer' }} onClick={()=>tapSong(song)}>
+                        {currentSong?.id===song.id&&playing?<Pause size={14} style={{ color:'var(--accent)',flexShrink:0 }}/>:<Play size={14} style={{ color:'var(--accent)',flexShrink:0 }}/>}
                         <div style={{ flex:1,minWidth:0 }}>
                           <div style={{ fontWeight:600,fontSize:'.9rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{tl(song,lang)}</div>
                           <div style={{ fontSize:'.75rem',color:'var(--text3)',fontFamily:"'Space Mono',monospace" }}>{song.album} {song.duration?'· '+fmtDuration(song.duration):''}</div>
@@ -215,7 +242,14 @@ function SongsTab({ view }: { view: ViewMode }) {
       })}
       {isAdmin && artists.length===0 && <button className="add-btn" onClick={()=>setEditing('new')}><Plus size={14}/>{lang==='zh'?'添加第一首歌':'Add first song'}</button>}
       {editing!==null && <SongEditor item={editing==='new'?undefined:editing} onSave={save} onClose={()=>setEditing(null)}/>}
-      <PlayerBar song={currentSong} onClose={()=>setCurrentSong(null)} onPrev={()=>idx>0&&setCurrentSong(allSongs[idx-1])} onNext={()=>idx<allSongs.length-1&&setCurrentSong(allSongs[idx+1])}/>
+      <audio ref={audioRef}
+        onPlay={()=>setPlaying(true)} onPause={()=>setPlaying(false)} onEnded={goNext}
+        onTimeUpdate={e=>{ const a=e.currentTarget; setProgress(a.currentTime||0); if(Number.isFinite(a.duration)) setDuration(a.duration) }}
+        onLoadedMetadata={e=>{ const d=e.currentTarget.duration; if(Number.isFinite(d)) setDuration(d) }}
+      />
+      <PlayerBar song={currentSong} playing={playing} progress={progress} duration={duration}
+        onToggle={playPause} onSeek={t=>{ const el=audioRef.current; if(el&&Number.isFinite(t)) el.currentTime=t }}
+        onClose={()=>setCurrentSong(null)} onPrev={goPrev} onNext={goNext}/>
     </>
   )
 }

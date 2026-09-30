@@ -154,8 +154,8 @@ export function HonorsPage() {
         {view==='card' ? (
           <div className="honors-grid">
             {honors.map(h=>(
-              <div key={h.id} style={{ background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',padding:'1.5rem',display:'flex',alignItems:'flex-start',gap:'1rem',backdropFilter:'blur(12px)',transition:'border-color var(--trans),box-shadow var(--trans)' }} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor='var(--border-h)';(e.currentTarget as HTMLDivElement).style.boxShadow='0 8px 32px var(--glow)'}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor='var(--card-border)';(e.currentTarget as HTMLDivElement).style.boxShadow='none'}}>
-                <div style={{ width:48,height:48,borderRadius:'var(--radius-sm)',background:'var(--grad)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}><Award size={24} color="#fff"/></div>
+              <div key={h.id} style={{ background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',padding:'1.5rem',display:'flex',alignItems:'flex-start',gap:'1rem',transition:'border-color var(--trans),box-shadow var(--trans)' }} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.borderColor='var(--border-h)';(e.currentTarget as HTMLDivElement).style.boxShadow='0 8px 32px var(--glow)'}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.borderColor='var(--card-border)';(e.currentTarget as HTMLDivElement).style.boxShadow='none'}}>
+                <div style={{ width:48,height:48,borderRadius:'var(--radius-sm)',background:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}><Award size={24} color="#fff"/></div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontFamily:"'Space Mono',monospace",fontSize:'.7rem',color:'var(--accent)',marginBottom:'.2rem' }}>{h.year}</div>
                   <div style={{ fontWeight:700,marginBottom:'.2rem' }}>{tl(h,lang)}</div>

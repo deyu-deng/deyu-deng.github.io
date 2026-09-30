@@ -195,7 +195,7 @@ export const tl  = (o: { title_en: string; title_zh: string }, l: string) => l =
 export const dl  = (o: { desc_en?: string; desc_zh?: string }, l: string) => l === 'zh' ? (o.desc_zh ?? '') : (o.desc_en ?? '')
 export const parseTags   = (t: string): string[] => { try { return JSON.parse(t) } catch { return [] } }
 export const fmtDate     = (iso: string | null) => iso ? new Date(iso).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' }) : ''
-export const fmtDuration = (s: number) => { const m = Math.floor(s / 60); return `${m}:${String(s % 60).padStart(2, '0')}` }
+export const fmtDuration = (s: number) => { const t = Math.max(0, Math.floor(Number(s) || 0)); return `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}` }
 export const titleFromFilename = (fn: string) => fn.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim()
 export const fileTypeFromName  = (fn: string): NoteFile['file_type'] => {
   const ext = fn.split('.').pop()?.toLowerCase() ?? ''

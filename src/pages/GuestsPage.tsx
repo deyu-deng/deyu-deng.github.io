@@ -61,7 +61,7 @@ export function GuestsPage() {
         )}
         <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
           {list.map(r=>(
-            <div key={r.id} style={{background:'var(--card-bg)',border:'1.5px solid var(--card-border)',borderRadius:'var(--r-lg)',padding:'1.4rem',backdropFilter:'blur(12px)'}}>
+            <div key={r.id} style={{background:'var(--card-bg)',border:'1.5px solid var(--card-border)',borderRadius:'var(--r-lg)',padding:'1.4rem'}}>
               <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:'1rem',flexWrap:'wrap'}}>
                 <div style={{flex:1}}>
                   <div style={{display:'flex',alignItems:'center',gap:'.6rem',marginBottom:'.5rem',flexWrap:'wrap'}}>

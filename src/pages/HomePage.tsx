@@ -198,7 +198,7 @@ function JourneySection() {
             {items.map((item,idx)=>(
               <div key={item.id} style={{display:'grid',gridTemplateColumns:'20px 1fr',gap:'1.25rem',paddingBottom:idx<items.length-1?'2rem':0}}>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
-                  <div style={{width:9,height:9,borderRadius:'50%',background:'var(--grad)',flexShrink:0,marginTop:6}}/>
+                  <div style={{width:9,height:9,borderRadius:'50%',background:'var(--accent)',flexShrink:0,marginTop:6}}/>
                   {idx<items.length-1&&<div style={{width:1,flex:1,background:'var(--border)',marginTop:5}}/>}
                 </div>
                 <div>
@@ -249,7 +249,7 @@ function ContactSection() {
             {LINKS.map((l,i)=>(
               <a key={i} href={l.href} target={l.href.startsWith('http')?'_blank':undefined} rel="noopener noreferrer"
                 onClick={l.href==='#'?e=>{e.preventDefault();navigator.clipboard?.writeText('ddy19858131702')}:undefined}
-                style={{display:'flex',alignItems:'center',gap:'1rem',padding:'.9rem 1.15rem',background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',backdropFilter:'blur(12px)',transition:'all var(--trans)'}}
+                style={{display:'flex',alignItems:'center',gap:'1rem',padding:'.9rem 1.15rem',background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',transition:'all var(--trans)'}}
                 onMouseEnter={e=>{(e.currentTarget as HTMLAnchorElement).style.borderColor='var(--border-h)';(e.currentTarget as HTMLAnchorElement).style.transform='translateX(4px)'}}
                 onMouseLeave={e=>{(e.currentTarget as HTMLAnchorElement).style.borderColor='var(--card-border)';(e.currentTarget as HTMLAnchorElement).style.transform='translateX(0)'}}>
                 <div style={{width:34,height:34,borderRadius:'var(--radius-sm)',background:'var(--bg3)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><l.Icon size={17} style={{color:'var(--text2)'}}/></div>
@@ -260,7 +260,7 @@ function ContactSection() {
               </a>
             ))}
           </div>
-          <div style={{background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',padding:'2.2rem',backdropFilter:'blur(12px)'}} className="reveal">
+          <div style={{background:'var(--card-bg)',border:'1px solid var(--card-border)',borderRadius:'var(--radius)',padding:'2.2rem'}} className="reveal">
             <h3 style={{fontSize:'1.4rem',fontWeight:800,marginBottom:'.65rem',letterSpacing:'-.02em'}}>{lang==='zh'?'欢迎联系':"Let's connect"}</h3>
             <p style={{color:'var(--text2)',fontSize:'.88rem',lineHeight:1.75,marginBottom:'1.4rem'}}>
               {lang==='zh'?'无论你想合作、交流还是打个招呼，我都很高兴收到你的消息。':'Whether you want to collaborate, share ideas, or just say hi — always happy to hear from you.'}
