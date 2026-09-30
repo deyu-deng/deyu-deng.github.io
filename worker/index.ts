@@ -262,13 +262,31 @@ export default {
       const fp=path.match(/^\/api\/file\/(.+)$/)
       if(fp&&method==='GET') {
         const key=decodeURIComponent(fp[1])
-        const obj=await env.BUCKET.get(key)
+        // 不支持 Range 的话，浏览器媒体管线会拒绝跳转，
+        // 音频进度条就永远拖不动 —— 所以必须把 Range 透传给 R2。
+        const rangeHeader=request.headers.get('Range')
+        const m=rangeHeader?/bytes=(\d+)-(\d*)/.exec(rangeHeader):null
+        const rangeOpts=m
+          ? {range: m[2] ? {offset:+m[1], length:+m[2]-+m[1]+1} : {offset:+m[1]}}
+          : undefined
+        const obj=await env.BUCKET.get(key, rangeOpts)
         if(!obj) return err('Not found',404,origin)
-        return new Response(obj.body,{headers:{
+        const headers: Record<string,string> = {
           'Content-Type':obj.httpMetadata?.contentType||'application/octet-stream',
           'Cache-Control':'private, max-age=1800',
+          'Accept-Ranges':'bytes',
           'Access-Control-Allow-Origin':origin,
-        }})
+        }
+        let status=200
+        if (obj.range) {
+          const {offset,length}=obj.range
+          status=206
+          headers['Content-Range']=`bytes ${offset}-${offset+length-1}/${obj.size}`
+          headers['Content-Length']=String(length)
+        } else {
+          headers['Content-Length']=String(obj.size)
+        }
+        return new Response(obj.body,{status,headers})
       }
       return err('Not found',404,origin)
     } catch(e){
