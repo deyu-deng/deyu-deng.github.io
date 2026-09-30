@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Moon, Sun, ShieldCheck, LogOut, BookOpen, Music, Box, Award, Home, Code2, Users } from 'lucide-react'
+import { Moon, Sun, ShieldCheck, LogOut, BookOpen, Music, Box, Home, Code2, Users } from 'lucide-react'
 import { useAppStore } from '@/store'
 import { LoginModal } from '@/components/admin/LoginModal'
 import { GuestModal } from '@/components/admin/GuestModal'
@@ -10,7 +10,6 @@ const NAV = [
   {to:'/music',    en:'Music',    zh:'音乐',  Icon:Music   },
   {to:'/projects', en:'Projects', zh:'项目',  Icon:Code2   },
   {to:'/modeling', en:'Modeling', zh:'建模',  Icon:Box     },
-  {to:'/honors',   en:'Honors',   zh:'荣誉',  Icon:Award   },
 ]
 
 export function Navbar() {
@@ -24,7 +23,7 @@ export function Navbar() {
       <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:100,background:'var(--nav-bg)',backdropFilter:'blur(24px) saturate(160%)',WebkitBackdropFilter:'blur(24px)',borderBottom:'1.5px solid var(--border)'}}>
         <div style={{maxWidth:1160,margin:'0 auto',padding:'0 1.5rem',height:64,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
           {/* Logo */}
-          <Link to="/" style={{fontFamily:"'Nunito',sans-serif",fontWeight:900,fontSize:'1.08rem',display:'flex',alignItems:'center',gap:'.5rem'}}>
+          <Link to="/" style={{fontFamily:"var(--font-ui)",fontWeight:900,fontSize:'1.08rem',display:'flex',alignItems:'center',gap:'.5rem'}}>
             <span className="grad-text">Turtlelet</span>
             <span style={{fontFamily:"'Space Mono',monospace",fontSize:'.65rem',color:'var(--text3)',fontWeight:400,opacity:.7}}>
               {lang==='zh'?'· 小龟':''}
@@ -36,7 +35,7 @@ export function Navbar() {
             {NAV.map(n=>{
               const active=loc.pathname.startsWith(n.to)
               return (
-                <Link key={n.to} to={n.to} style={{display:'flex',alignItems:'center',gap:'.38rem',padding:'.38rem .85rem',borderRadius:'var(--r-xl)',fontSize:'.83rem',fontWeight:800,color:active?'var(--accent)':'var(--text2)',background:active?'var(--glow-rgb,rgba(45,179,106,.1)':'transparent',transition:'all var(--trans)'}}>
+                <Link key={n.to} to={n.to} style={{display:'flex',alignItems:'center',gap:'.38rem',padding:'.38rem .85rem',borderRadius:'var(--r-md)',fontSize:'.83rem',fontWeight:800,color:active?'var(--accent)':'var(--text2)',background:active?'var(--grad-soft)':'transparent',transition:'all var(--trans)'}}>
                   <n.Icon size={13}/>{lang==='zh'?n.zh:n.en}
                 </Link>
               )
@@ -57,7 +56,7 @@ export function Navbar() {
               </button>
             )}
 
-            <button className="btn-icon" onClick={toggleLang} style={{fontFamily:"'Nunito',sans-serif",fontSize:'.7rem',fontWeight:900,width:'auto',padding:'0 .65rem',letterSpacing:'.03em',borderRadius:'var(--r-xl)'}}>
+            <button className="btn-icon" onClick={toggleLang} style={{fontFamily:"var(--font-ui)",fontSize:'.7rem',fontWeight:900,width:'auto',padding:'0 .65rem',letterSpacing:'.03em',borderRadius:'var(--r-xl)'}}>
               {lang==='en'?'EN':'中'}
             </button>
             <button className="btn-icon" onClick={toggleTheme} style={{borderRadius:'var(--r-sm)'}} title="主题">

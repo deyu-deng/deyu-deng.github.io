@@ -33,7 +33,7 @@ export function GuestsPage() {
 
   if(!isAdmin) return (
     <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'80vh'}}>
-      <p style={{color:'var(--text3)',fontFamily:"'Nunito',sans-serif"}}>{lang==='zh'?'仅管理员可访问':'Admin only'}</p>
+      <p style={{color:'var(--text3)',fontFamily:"var(--font-ui)"}}>{lang==='zh'?'仅管理员可访问':'Admin only'}</p>
     </div>
   )
 
@@ -55,7 +55,7 @@ export function GuestsPage() {
       <div style={{maxWidth:1160,margin:'0 auto',padding:'1.5rem 2rem 4rem'}}>
         {loading && <div style={{textAlign:'center',padding:'3rem',color:'var(--text3)'}}>Loading…</div>}
         {!loading && list.length===0 && (
-          <div style={{textAlign:'center',padding:'4rem',color:'var(--text3)',fontFamily:"'Nunito',sans-serif"}}>
+          <div style={{textAlign:'center',padding:'4rem',color:'var(--text3)',fontFamily:"var(--font-ui)"}}>
             {lang==='zh'?'暂无申请':'No requests'}
           </div>
         )}
@@ -85,13 +85,13 @@ export function GuestsPage() {
                     <button className="btn-primary" style={{padding:'.5rem 1.1rem',fontSize:'.82rem'}} onClick={()=>approve(r.id)}>
                       <CheckCircle size={14}/>{lang==='zh'?'批准':'Approve'}
                     </button>
-                    <button className="btn-ghost" style={{padding:'.5rem 1.1rem',fontSize:'.82rem',color:'var(--accent)',borderColor:'var(--glow-rgb,rgba(45,179,106,.3)'}} onClick={()=>reject(r.id)}>
+                    <button className="btn-ghost" style={{padding:'.5rem 1.1rem',fontSize:'.82rem',color:'var(--accent)',borderColor:'var(--border-h)'}} onClick={()=>reject(r.id)}>
                       <XCircle size={14}/>{lang==='zh'?'拒绝':'Reject'}
                     </button>
                   </div>
                 )}
                 {tab!=='pending' && (
-                  <div style={{display:'flex',alignItems:'center',gap:'.4rem',padding:'.4rem .85rem',borderRadius:'var(--r-xl)',background:tab==='approved'?'rgba(52,211,153,.1)':'var(--glow-rgb,rgba(45,179,106,.1)',color:tab==='approved'?'#22c55e':'var(--accent)',fontSize:'.8rem',fontWeight:800}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'.4rem',padding:'.4rem .85rem',borderRadius:'var(--r-xl)',background:tab==='approved'?'var(--grad-soft)':'var(--bg3)',color:tab==='approved'?'var(--accent)':'var(--accent)',fontSize:'.8rem',fontWeight:800}}>
                     {tab==='approved'?<CheckCircle size={14}/>:<XCircle size={14}/>}
                     {lang==='zh'?(tab==='approved'?'已批准':'已拒绝'):(tab==='approved'?'Approved':'Rejected')}
                   </div>

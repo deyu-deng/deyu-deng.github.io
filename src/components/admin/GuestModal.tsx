@@ -38,7 +38,7 @@ export function GuestModal({ onClose }: Props) {
   }
 
   const statusLabel = (s:string|null) => {
-    if(s==='approved') return {text:lang==='zh'?'已批准！你现在可以下载文件了':'Approved! You can now download files.',color:'#22c55e'}
+    if(s==='approved') return {text:lang==='zh'?'已批准！你现在可以下载文件了':'Approved! You can now download files.',color:'var(--accent)'}
     if(s==='rejected') return {text:lang==='zh'?'申请被拒绝':'Request rejected.',color:'var(--accent)'}
     if(s==='pending')  return {text:lang==='zh'?'等待审批中，请稍后再查询':'Pending review, check back later.',color:'var(--accent)'}
     return null
@@ -67,7 +67,7 @@ export function GuestModal({ onClose }: Props) {
 
         {tab==='apply' && !done && (
           <form onSubmit={handleApply} style={{display:'flex',flexDirection:'column',gap:'.85rem'}}>
-            <p style={{fontSize:'.83rem',color:'var(--text2)',lineHeight:1.6,background:'var(--glow-rgb,rgba(45,179,106,.06)',padding:'.75rem 1rem',borderRadius:'var(--r-md)',border:'1.5px solid var(--border)'}}>
+            <p style={{fontSize:'.83rem',color:'var(--text2)',lineHeight:1.6,background:'var(--grad-soft)',padding:'.75rem 1rem',borderRadius:'var(--r-md)',border:'1.5px solid var(--border)'}}>
               {lang==='zh'
                 ?'申请通过后可下载音乐、乐谱和建模文件。站长会通过邮件通知你审批结果。'
                 :'After approval, you can download music, scores and model files. You will be notified via email.'}
@@ -101,7 +101,7 @@ export function GuestModal({ onClose }: Props) {
 
         {tab==='apply' && done && (
           <div style={{textAlign:'center',padding:'1.5rem 0'}}>
-            <CheckCircle size={48} style={{color:'#22c55e',margin:'0 auto 1rem'}}/>
+            <CheckCircle size={48} style={{color:'var(--accent)',margin:'0 auto 1rem'}}/>
             <h3 style={{fontSize:'1.1rem',fontWeight:800,marginBottom:'.5rem'}}>{lang==='zh'?'申请已提交！':'Application submitted!'}</h3>
             <p style={{color:'var(--text2)',fontSize:'.88rem',lineHeight:1.7,marginBottom:'1.25rem'}}>
               {lang==='zh'
@@ -119,7 +119,7 @@ export function GuestModal({ onClose }: Props) {
         {tab==='check' && (
           <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
             {guestToken && status === null && (
-              <div style={{background:'rgba(52,211,153,.08)',border:'1.5px solid rgba(52,211,153,.2)',borderRadius:'var(--r-md)',padding:'.85rem 1rem',fontSize:'.85rem',color:'#22c55e'}}>
+              <div style={{background:'var(--grad-soft)',border:'1.5px solid var(--border-h)',borderRadius:'var(--r-md)',padding:'.85rem 1rem',fontSize:'.85rem',color:'var(--accent)'}}>
                 {lang==='zh'?`当前已登录为访客：${guestNick}`:`Logged in as guest: ${guestNick}`}
               </div>
             )}

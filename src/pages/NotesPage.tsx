@@ -5,7 +5,6 @@ import { useAppStore } from '@/store'
 import { notesApi, noteCatApi, noteFilesApi, resourceApi, fileApi, buildCategoryTree, tl, dl, parseTags, fmtDate, titleFromFilename, fileTypeFromName } from '@/lib/api'
 import { ViewToggle } from '@/components/ui/ViewToggle'
 import { Tooltip }    from '@/components/ui/Tooltip'
-import { AnimBg }     from '@/components/ui/AnimBg'
 import type { Note, NoteCategory, NoteFile, ResourceLink, ViewMode } from '@/types'
 
 function fileIcon(ft: NoteFile['file_type'], size = 14) {
@@ -121,8 +120,8 @@ function NoteEditor({item,existingFiles,cats,defaultCatId,onSave,onClose}:{item?
           {pending.length>0&&(
             <div><p style={{fontSize:'.77rem',fontWeight:700,color:'var(--text2)',marginBottom:'.4rem'}}>{lang==='zh'?`待添加 ${pending.length} 个`:`${pending.length} to add`}</p>
               {pending.map((f,i)=>(
-                <div key={i} style={{display:'flex',alignItems:'center',gap:'.5rem',fontSize:'.8rem',background:'rgba(34,197,94,.08)',border:'1px solid rgba(34,197,94,.2)',borderRadius:'var(--r-sm)',padding:'.35rem .7rem',marginBottom:'.25rem'}}>
-                  <span style={{color:'#22c55e',fontWeight:700}}>OK</span><span style={{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.name}</span>
+                <div key={i} style={{display:'flex',alignItems:'center',gap:'.5rem',fontSize:'.8rem',background:'var(--grad-soft)',border:'1px solid var(--border-h)',borderRadius:'var(--r-sm)',padding:'.35rem .7rem',marginBottom:'.25rem'}}>
+                  <span style={{color:'var(--accent)',fontWeight:700}}>OK</span><span style={{flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.name}</span>
                   <button type="button" onClick={()=>setPending(p=>p.filter((_,j)=>j!==i))} style={{background:'none',border:'none',color:'var(--text3)',cursor:'pointer',fontWeight:700}}>X</button>
                 </div>
               ))}
@@ -150,14 +149,14 @@ function NoteCardItem({note,files,lang,isAdmin,onEdit,onDelete,onClick}:{note:No
     <div className="card" style={{cursor:'pointer',padding:0,overflow:'hidden'}} onClick={onClick}>
       {desc&&(
         <Tooltip content={desc}>
-          <div style={{background:'var(--grad-soft)',padding:'.6rem 1rem .45rem',borderBottom:'1px solid var(--border)',fontSize:'.73rem',color:'var(--text3)',fontStyle:'italic',fontFamily:"'ZCOOL XiaoWei','Noto Serif SC',serif",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',cursor:'default'}} onClick={e=>e.stopPropagation()}>
+          <div style={{background:'var(--grad-soft)',padding:'.6rem 1rem .45rem',borderBottom:'1px solid var(--border)',fontSize:'.73rem',color:'var(--text3)',fontStyle:'italic',fontFamily:"var(--font-zh)",overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',cursor:'default'}} onClick={e=>e.stopPropagation()}>
             {desc}
           </div>
         </Tooltip>
       )}
       <div style={{padding:'1rem'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'.55rem'}}>
-          <div style={{fontWeight:900,fontSize:'.92rem',flex:1,paddingRight:'.5rem',fontFamily:"'ZCOOL XiaoWei','Noto Serif SC',serif"}}>{tl(note,lang)}</div>
+          <div style={{fontWeight:900,fontSize:'.92rem',flex:1,paddingRight:'.5rem',fontFamily:"var(--font-zh)"}}>{tl(note,lang)}</div>
           <div style={{display:'flex',gap:'.25rem',flexShrink:0}} onClick={e=>e.stopPropagation()}>
             {isAdmin&&<><button className="btn-icon" style={{width:24,height:24}} onClick={onEdit}><Pencil size={11}/></button><button className="btn-icon" style={{width:24,height:24}} onClick={onDelete}><Trash2 size={11}/></button></>}
           </div>
@@ -182,7 +181,7 @@ function NoteListItem({note,files,lang,isAdmin,onEdit,onDelete,onClick}:{note:No
     <div className="list-item" style={{cursor:'pointer'}} onClick={onClick}>
       <File size={15} style={{color:'var(--accent)',flexShrink:0}}/>
       <div style={{flex:1,minWidth:0}}>
-        <div style={{fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:"'ZCOOL XiaoWei','Noto Serif SC',serif"}}>{tl(note,lang)}</div>
+        <div style={{fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:"var(--font-zh)"}}>{tl(note,lang)}</div>
         <div style={{fontSize:'.72rem',color:'var(--text3)',fontFamily:"'Space Mono',monospace"}}>
           {files.length>0?`${files.length} ${lang==='zh'?'个文件':'file(s)'} · `:''}{fmtDate(note.updated_at)}
         </div>
@@ -203,7 +202,7 @@ function CategoryTree({node,notes,noteFiles,allCats,view,lang,isAdmin,onEditNote
       <div className="tree-header" onClick={()=>setOpen(v=>!v)}>
         {open?<ChevronDown size={14} style={{color:'var(--text3)',flexShrink:0}}/>:<ChevronRight size={14} style={{color:'var(--text3)',flexShrink:0}}/>}
         <span>{catIcon(node.id)}</span>
-        <span style={{fontWeight:700,fontSize:'.9rem',fontFamily:"'ZCOOL XiaoWei','Noto Serif SC',serif"}}>{lang==='zh'?node.name_zh:node.name_en}</span>
+        <span style={{fontWeight:700,fontSize:'.9rem',fontFamily:"var(--font-zh)"}}>{lang==='zh'?node.name_zh:node.name_en}</span>
         <span style={{fontSize:'.72rem',color:'var(--text3)',fontFamily:"'Space Mono',monospace"}}>{catNotes.length}</span>
         {isAdmin&&<div style={{marginLeft:'auto',display:'flex',gap:'.28rem'}} onClick={e=>e.stopPropagation()}>
           <button className="btn-icon" style={{width:24,height:24}} onClick={()=>onEditCat(node)}><Pencil size={11}/></button>
@@ -316,7 +315,6 @@ export function NotesPage() {
 
   return(
     <div className="page-wrap" style={{position:'relative'}}>
-      <AnimBg theme="notes"/>
       <div className="anim-bg-content">
         <div className="page-header">
           <span className="section-label">knowledge base</span>
@@ -345,7 +343,7 @@ export function NotesPage() {
                 <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between'}}>
                   <div style={{display:'flex',alignItems:'center',gap:'.7rem',flex:1}}>
                     <ExternalLink size={20} style={{color:'var(--accent)',flexShrink:0}} />
-                    <div><div style={{fontWeight:700,fontFamily:"'ZCOOL XiaoWei','Noto Serif SC',serif"}}>{tl(link,lang)}</div><div style={{fontSize:'.82rem',color:'var(--text2)',marginTop:'.18rem'}}>{dl(link,lang)}</div></div>
+                    <div><div style={{fontWeight:700,fontFamily:"var(--font-zh)"}}>{tl(link,lang)}</div><div style={{fontSize:'.82rem',color:'var(--text2)',marginTop:'.18rem'}}>{dl(link,lang)}</div></div>
                   </div>
                   <div style={{display:'flex',gap:'.28rem',flexShrink:0}} onClick={e=>e.preventDefault()}>
                     {isAdmin&&<><button className="btn-icon" style={{width:24,height:24}} onClick={()=>setEditLink(link)}><Pencil size={11}/></button><button className="btn-icon" style={{width:24,height:24}} onClick={()=>delLink(link.id)}><Trash2 size={11}/></button></>}

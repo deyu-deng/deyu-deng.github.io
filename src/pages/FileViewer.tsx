@@ -96,7 +96,7 @@ export function FileViewer() {
       <div style={{position:'sticky',top:64,zIndex:50,background:'var(--nav-bg)',backdropFilter:'blur(20px)',borderBottom:'1px solid var(--border)',padding:'.7rem 2rem',display:'flex',alignItems:'center',gap:'.9rem'}}>
         <button className="btn-icon" onClick={()=>navigate(-1)}><ArrowLeft size={15}/></button>
         <div style={{flex:1,minWidth:0}}>
-          <h1 style={{fontSize:.97+'rem',fontWeight:900,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:"'ZCOOL XiaoWei','Noto Serif SC',serif"}}>{title}</h1>
+          <h1 style={{fontSize:.97+'rem',fontWeight:900,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:"var(--font-zh)"}}>{title}</h1>
           {note?.created_at&&<div style={{fontSize:'.68rem',color:'var(--text3)',fontFamily:"'Space Mono',monospace",marginTop:'.1rem'}}>{lang==='zh'?'创建于':'Created'} {fmtDate(note.created_at)}</div>}
         </div>
         <div style={{display:'flex',gap:'.45rem',flexShrink:0}}>
@@ -118,7 +118,7 @@ export function FileViewer() {
       {/* Description */}
       {desc && (
         <div style={{background:'var(--grad-soft)',borderBottom:'1px solid var(--border)',padding:'.85rem 2rem'}}>
-          <div style={{maxWidth:900,margin:'0 auto',fontSize:'.88rem',color:'var(--text2)',lineHeight:1.7,fontStyle:'italic',fontFamily:"'ZCOOL XiaoWei','Noto Serif SC',serif"}}>{desc}</div>
+          <div style={{maxWidth:900,margin:'0 auto',fontSize:'.88rem',color:'var(--text2)',lineHeight:1.7,fontStyle:'italic',fontFamily:"var(--font-zh)"}}>{desc}</div>
         </div>
       )}
 
@@ -136,7 +136,7 @@ export function FileViewer() {
                   background:activeFile?.id===f.id?'var(--grad-soft)':'var(--bg3)',
                   color:activeFile?.id===f.id?'var(--accent)':'var(--text2)',
                   fontSize:'.8rem',fontWeight:700,cursor:'pointer',
-                  transition:'all var(--trans)',fontFamily:"'Nunito',sans-serif",
+                  transition:'all var(--trans)',fontFamily:"var(--font-ui)",
                 }}>
                 <span>{fileIcon(f.file_type)}</span>
                 <span style={{maxWidth:140,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.filename||f.file_type.toUpperCase()}</span>
@@ -155,7 +155,7 @@ export function FileViewer() {
 
         {/* No files */}
         {files.length === 0 && (
-          <div style={{textAlign:'center',padding:'4rem 0',color:'var(--text3)',fontFamily:"'ZCOOL XiaoWei',serif"}}>
+          <div style={{textAlign:'center',padding:'4rem 0',color:'var(--text3)',fontFamily:"var(--font-zh)"}}>
             {lang==='zh'?'暂无附件。':'No files attached yet.'}
           </div>
         )}
@@ -184,7 +184,7 @@ export function FileViewer() {
         {activeFile && !INLINE_TYPES.includes(activeFile.file_type) && (
           <div style={{textAlign:'center',padding:'4rem 0'}}>
             <div style={{marginBottom:'1rem'}}>{fileIcon(activeFile.file_type, 48)}</div>
-            <p style={{color:'var(--text2)',marginBottom:'1.5rem',fontFamily:"'ZCOOL XiaoWei',serif"}}>
+            <p style={{color:'var(--text2)',marginBottom:'1.5rem',fontFamily:"var(--font-zh)"}}>
               {lang==='zh'?'此格式无法在线预览，请下载后打开。':'Cannot preview inline. Download to open.'}
             </p>
             <a href={fileApi.url(activeFile.file_key)} download={activeFile.filename} className="btn-primary" style={{display:'inline-flex',alignItems:'center',gap:'.5rem'}}>

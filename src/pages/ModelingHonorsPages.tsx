@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Plus, Pencil, Trash2, Box, X, Loader, ExternalLink, Award } from 'lucide-react'
 import { useAppStore } from '@/store'
-import { AnimBg } from '@/components/ui/AnimBg'
 import { modelsApi, honorsApi, tl, dl, fmtDate,fileApi } from '@/lib/api'
 import { ViewToggle } from '@/components/ui/ViewToggle'
 import { FileUpload } from '@/components/ui/FileUpload'
@@ -85,7 +84,6 @@ export function ModelingPage() {
           </div>
         </div>
       </div>
-      <AnimBg theme="modeling"/>
       <div style={{ maxWidth:1200,margin:'0 auto',padding:'1.5rem 2rem 4rem',position:'relative',zIndex:1 }}>
         {view==='card' ? (
           <div className="cards-grid">
@@ -152,7 +150,6 @@ export function HonorsPage() {
           </div>
         </div>
       </div>
-      <AnimBg theme="honors"/>
       <div style={{ maxWidth:1200,margin:'0 auto',padding:'1.5rem 2rem 4rem',position:'relative',zIndex:1 }}>
         {view==='card' ? (
           <div className="honors-grid">

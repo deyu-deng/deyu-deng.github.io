@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Play, Pause, Download, Plus, Pencil, Trash2, Music2, FileMusic, X, Loader, ChevronDown, ChevronRight, SkipBack, SkipForward, Mic, MessageCircle } from 'lucide-react'
 import { useAppStore } from '@/store'
-import { AnimBg } from '@/components/ui/AnimBg'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { songsApi, scoresApi, fileApi, tl, fmtDuration,titleFromFilename} from '@/lib/api'
 import { ViewToggle } from '@/components/ui/ViewToggle'
@@ -180,7 +179,7 @@ function SongsTab({ view }: { view: ViewMode }) {
                         <div style={{ flex:1,minWidth:0 }}>
                           <div style={{ fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{tl(song,lang)}</div>
                           <div style={{ fontSize:'.78rem',color:'var(--text3)',fontFamily:"'Space Mono',monospace" }}>{song.album} {song.duration?'· '+fmtDuration(song.duration):''}</div>
-                        {song.review&&<Tooltip content={song.review}><span style={{fontSize:'.72rem',color:'var(--text3)',cursor:'help',fontFamily:"'ZCOOL XiaoWei',serif",display:'inline-block',marginTop:'.25rem',borderBottom:'1px dashed var(--border-h)'}}><MessageCircle size={11} style={{display:'inline',verticalAlign:'middle',marginRight:'.25rem'}}/>{lang==='zh'?'查看评价':'review'}</span></Tooltip>}
+                        {song.review&&<Tooltip content={song.review}><span style={{fontSize:'.72rem',color:'var(--text3)',cursor:'help',fontFamily:"var(--font-zh)",display:'inline-block',marginTop:'.25rem',borderBottom:'1px dashed var(--border-h)'}}><MessageCircle size={11} style={{display:'inline',verticalAlign:'middle',marginRight:'.25rem'}}/>{lang==='zh'?'查看评价':'review'}</span></Tooltip>}
                         </div>
                         <div style={{ display:'flex',gap:'.3rem',flexShrink:0 }} onClick={e=>e.stopPropagation()}>
                           {isAdmin&&<><button className="btn-icon" style={{ width:28,height:28 }} onClick={()=>setEditing(song)}><Pencil size={12}/></button><button className="btn-icon" style={{ width:28,height:28 }} onClick={()=>del(song.id)}><Trash2 size={12}/></button></>}
@@ -305,7 +304,6 @@ export function MusicPage() {
 
   return (
     <div className="page-wrap" style={{position:'relative'}}>
-      <AnimBg theme="music"/>
       <div style={{position:'relative',zIndex:1}}>
       <div className="page-header">
         <span className="section-label">// music collection</span>

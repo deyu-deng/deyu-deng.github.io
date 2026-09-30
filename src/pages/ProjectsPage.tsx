@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Plus, Pencil, Trash2, ExternalLink, Github, X, Loader, Download, RefreshCw } from 'lucide-react'
 import { useAppStore } from '@/store'
-import { AnimBg } from '@/components/ui/AnimBg'
 import { projectsApi, fileApi, githubApi, fmtDate, tl, dl } from '@/lib/api'
 import { ViewToggle } from '@/components/ui/ViewToggle'
 import { FileUpload } from '@/components/ui/FileUpload'
@@ -270,7 +269,6 @@ export function ProjectsPage() {
 
   return (
     <div className="page-wrap" style={{position:'relative'}}>
-      <AnimBg theme="projects"/>
       <div className="page-header">
         <span className="section-label">// software</span>
         <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:'1rem'}}>
