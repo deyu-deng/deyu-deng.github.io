@@ -63,12 +63,12 @@ function ScoreEditor({ item, onSave, onClose }: { item?: Score; onSave:(d:Record
             <div className="field" key={k}><label>{lang==='zh'?zh:en}</label><input value={(form as Record<string,unknown>)[k] as string} onChange={e=>setForm(v=>({...v,[k]:e.target.value}))}/></div>
           ))}
           <div className="field"><label>{lang==='zh'?'谱型':'Score type'}</label>
-            <select value={form.score_type} onChange={e=>setForm(v=>({...v,score_type:e.target.value}))}>
+            <select value={form.score_type} onChange={e=>setForm(v=>({...v,score_type:e.target.value as typeof v.score_type}))}>
               {TYPES.map(([v,l])=><option key={v} value={v}>{l}</option>)}
             </select>
           </div>
           <div className="field"><label>{lang==='zh'?'文件格式':'File format'}</label>
-            <select value={form.file_type} onChange={e=>setForm(v=>({...v,file_type:e.target.value}))}>
+            <select value={form.file_type} onChange={e=>setForm(v=>({...v,file_type:e.target.value as typeof v.file_type}))}>
               <option value="pdf">PDF</option><option value="gp">Guitar Pro (.gp/.gpx/.gp5)</option>
             </select>
           </div>

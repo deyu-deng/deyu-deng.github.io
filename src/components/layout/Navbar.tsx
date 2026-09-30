@@ -82,10 +82,6 @@ export function Navbar() {
             </Link>
           )
         })}
-        {isAdmin
-          ?<button onClick={logout} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'.18rem',background:'none',border:'none',color:'var(--accent)',fontSize:'.58rem',padding:'.35rem .4rem',cursor:'pointer',fontWeight:800}}><LogOut size={19}/>{lang==='zh'?'退出':'Out'}</button>
-          :<button onClick={()=>setLoginOpen(true)} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:'.18rem',background:'none',border:'none',color:'var(--text3)',fontSize:'.58rem',padding:'.35rem .4rem',cursor:'pointer',fontWeight:800}}><ShieldCheck size={19}/>{lang==='zh'?'登录':'Login'}</button>
-        }
       </nav>
 
       <style>{`@media(max-width:768px){.desk-nav{display:none!important}}`}</style>
